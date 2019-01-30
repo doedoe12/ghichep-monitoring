@@ -70,7 +70,7 @@ Bộ nhớ đệm được phân bố dưới dạng file system và block devic
 
 - Slabs
 
-Mô tả việc sử dụng kernel của bộ nhớ. Lưu ý rằng các kernel page không thể được page out ra đĩa.
+Mô tả việc kernel sử dụng bộ nhớ. Lưu ý rằng các kernel page không thể được page out ra đĩa.
 
 - Active versus inactive memory
 
