@@ -256,3 +256,164 @@ Tiện ích `mpstat` cho phép bạn hiển thị số liệu thống kê tổng
 Để sử dụng `numastat` cần cài đặt gói `numactl`
 
 <img src="img/11.jpg">
+
+## 10. pmap
+
+Lệnh `pmap` báo cáo số lượng bộ nhớ mà một hay nhiều tiến trình đang sử dụng. Bạn có thể sử dụng công cụ này để xác định processes trên máy chủ được cấp bao nhiêu bộ nhớ và lượng bộ nhớ này có gây nên hiện tượng memory bottlenecks không. Để biết thông tin chi tiết, sử dụng option `pmap -d` 
+
+`pmap -d PID`
+
+Ví dụ:
+
+<img src="img/12.jpg">
+
+<img src="img/13.jpg">
+
+Một số thông tin quan trọng ở phía dưới cùng:
+
+- **mapped**: Tổng lượng bộ nhớ mapped vào files để sử dụng trong tiến trình 
+
+- **writable/private**: Lượng private address space tiến trình này đang sử dụng 
+
+- **shared**: Lượng address space tiến trình này đang chia sẻ.
+
+Bạn cũng có thể xem các address space nơi lưu các thông tin. Bạn có thể tìm thấy một sự khác biệt thú vị khi sử dụng lệnh `pmap` trên hệ thống 32 và 64bit.
+
+## 11. netstat 
+
+`netstat` là một trong những công cụ thông dụng nhất. Nếu bạn làm việc với network, bạn có thể thấy quen thuộc với công cụ này. Nó hiển thị rất nhiều thông tin liên quan đến network như socket usage, routing, interface, protocol, network statistic, ... Đây là một vào option cơ bản:
+
+- **-a**: Hiển thị tất cả thông tin về socket
+
+- **-r**: Hiển thị thông tin về routing 
+
+- **-i**: Hiển thị số liệu thông kê về network interface
+
+- **-s**: Hiển thị thống kê network protocol
+
+Có rất nhiều các option hữu dụng khác. Tìm hiểu thêm tại man page.
+
+Ví dụ thông tin socket:
+
+<img src="img/14.jpg">
+
+- **Proto**: Giao thức được sử dụng bởi socket (tcp, udp, raw)
+
+- **Recv-Q**: Số lượng bytes không được sao chép bởi chương trình người dùng kết nối tới socket này.
+
+- **Send-Q**: Số lượng bytes không được máy chủ từ xa xác nhận.
+
+- **Local Address**: Địa chỉ và số cổng của đầu cuối cục bộ của socket. Trừ khi option --numberic (-n) được sử dụng, địa chỉ socket được phân giải thành FQDN, và số cổng được dịch thành tên service.
+
+- **Foreign Address**: Địa chỉ và số cổng của đầu cuối từ xa của socket 
+
+- **State**: Trạng thái của socket. Vì không có trạng thái nào trong raw mode và thường không có trạng thái được sử dụng tại UDP, cột này có thể để trống.
+
+## 12. iptraf
+
+`iptraf` giám sát TCP/IP traffic và báo cáo theo thời gian thực. Nó hiển thị thống kê TCP/IP traffic theo từng session, theo interface, và theo giao thức. Tiện ích `iptraf` được cung cấp bởi gói `iptraf`.
+
+`iptraf` báo cáo một số vấn đề sau:
+
+- **IP traffic monitor**: Thống kê network traffic theo kết nối TCP 
+
+- **General interface statistic**: Thống kê IP traffic theo network interface
+
+- **Detailed interface statistic**: Thống kê network traffic theo giao thức
+
+- **Statistical breakdowns**: Thống kê network traffic theo cổng TCP/UDP và theo kích cỡ gói 
+
+- **LAN station monitor**: Thống kê network traffic theo địa chỉ Layer2
+
+Cài đặt iptraf và theo dõi theo interface:
+
+```
+apt install iptraf-ng 
+iptraf-ng -i <interface>
+```
+
+## 13. tcpdump/ethereal
+
+`tcpdump` và `ethereal` sử dụng để bắt và phân tích network traffic. Cả 2 công cụ sử dụng thư viện **libpcap** để bắt gói tin. Chúng giám sát tất cả traffic trên một network adapter với promiscuous mode và bắt tất cả các frame mà adapter nhận được. Để bắt tất cả các gói, các lệnh này nên được thực thi với quyền super user. 
+
+Bạn có thể dùng các công cụ này để tìm hiểu các vấn đề liên quan đến network. Bạn có thể tìm thấy TCP/IP retransmission, windows size scaling, name resolution problem, network misconfiguration, ... Lưu ý rằng các công cụ này chỉ có thể giám sát các frame network adapter nhận được, không phải toàn bộ network traffic.
+
+Xem thêm bài viết của mình về `tcpdump` tại [đây](https://github.com/doedoe12/Internship/blob/master/Linux/tcpdump.md)
+
+## 14. nmon
+
+`nmon` là viết tắt của Nigel's Monitor, là một công cụ phổ biến để giám sát hiệu năng hệ thống Linux được phát triển bởi Nigel Griffiths. Một vài task có thể giám sát gồm processor utilization, memory utilization, run queue information, disks I/O statistic, network I/O statistic, paging activity, và process metrics.
+
+Để chạy `nmon`, đơn giản là bật công cụ lên và chọn subsystem bằng cách gõ vào lệnh one-key của chúng. Ví dụ, để lấy thông tin CPU, memory, và disk statistic, chạy `nmon` và nhập **c m d**.
+
+Một tính năng hữu ích của `nmon` là cho phép lưu lại thống kê hiệu năng sau khi phân tích và xuất file dạng CSV file. Output dạng CSV có thể được import vào các bảng tính để tính toán và tạo báo cáo dạng biểu đồ.
+
+Ví dụ chạy `nmon` cho một giờ và cứ 30s thì snapshot một lần:
+
+```
+nmon -f -s 30 -c 120
+```
+
+Output của lệnh trên sẽ được lưu tại một text file ở thư mục hiện tại với tên `<hostname>_date_time.nmon` 
+
+## 15. strace
+
+Lệnh `strace` chặn và ghi lại các system call được gọi bởi một tiến trình, và các tín hiệu được nhận bởi một tiến trình. Đây là một công cụ chuẩn đoán, giới thiệu, gỡ lỗi hữu dụng. Quản trị viên hệ thống thấy nó có giá trị trong việc giải quyết các vấn đề với chương trình.
+
+Để trace một process:
+
+`strace -p <pid>`
+
+**Chú ý**: Khi lệnh `strace` đang chạy chống lại một tiến trình thì hiệu suất của PID đó bị giảm đáng kể, chỉ nên chạy lệnh trong thời gian thu thập dữ liệu.
+
+Ở đây có một cách sử dụng thú vị. Lệnh này báo cáo lượng thời gian đã tiêu thụ trong kernel của mỗi system call để thực thi một lệnh.
+
+```
+strace -c <command>
+```
+
+<img src="img/15.jpg">
+
+## 16. Proc file system 
+
+`Proc file system` không thực sự là một file system, nhưng nó cực hữu dụng. Nó không được dự định để lưu dữ liệu; hơn thế nữa, nó cung cấp một interface tới kernel đang chạy. `proc file system` cho phép một người quản trị giám sát và thay đổi kernel. Hầu hết các công cụ đo lường hiệu suất trên Linux đều dựa trên thông tin được cung cấp bởi `/proc`.
+
+<img src="img/16.jpg">
+
+Nhìn vào proc file system, chúng ta có thể phân biệt một số thư mục con phục vụ các mục đích khác nhau, nhưng vì hầu hết các thông tin trong thư mục proc không dễ để đọc được, bạn được khuyến khích sử dụng các công cụ như `vmstat` để hiển thị các số liệu thống kê khác nhau theo cách dễ đọc hơn. Lưu ý rằng thông tin chứa trong proc file system khác nhau theo kiến trúc hệ thống.
+
+- Files in the /proc directory
+
+Các tệp khác nhau trong thư mục gốc của Proc đề cập đến một số thống kê hệ thống thích hợp. Bạn có thể tìm thấy thông tin về các công cụ Linux như `vmstat` và `cpuinfo` tại đây như là nguồn của output của chúng.
+
+- Numbers 1 to X
+
+Các thư mục con trong này là các tiến trình đang chạy của hệ thống, tên thư mục là PID của tiến trình đó, và chứa các thông tin liên quan tới nó. Cấu trúc luôn bắt đầu từ PID 1.
+
+- acpi
+
+Cho biết advance configuration và power interface được hỗ trợ bởi các máy tính hiện đại nhất và các hệ thống notebook. Vì nó là công nghệ PC chính nên nó thường bị tắt trên các hệ thống máy chủ.
+
+- bus
+
+Là một thư mục con bao gồm thông tin về hệ thống con bus như PCI bus hoặc USB interface của các hệ thống tương tự
+
+- irq
+
+Thư mục con `irq` chứa thông tin về các interrupt trong một hệ thống. Mỗi thư mục con trong thư mục này đề cập tới một interrupt hoặc một attaced device như là network interface card. Trong thư mục con irq, bạn có thể thay đổi CPU affinity của một interrupt nhất định.
+
+- net
+
+Thư mục con này chứa một số lượng đáng kể các số liệu thống kê thô liên quan đến giao diện mạng của bạn, chẳng hạn như các gói phát đa hướng nhận được hoặc các tuyến trên mỗi giao diện.
+
+- scsi
+
+Thư mục này chứa thông tin về SCSI subsystem của hệ thống tương ứng, như attaced devices hoặc driver revision.
+
+- sys 
+
+Trong thư mục con sys, bạn tìm thấy các tham số kernel có thể điều chỉnh, chẳng hạn như hành vi của trình quản lý bộ nhớ ảo hoặc network stack.
+
+- tty 
+
+Thư mục con tty chứa thông tin về terminals ảo tương ứng của hệ thống và thiết bị vật lý nào được gắn vào hệ thống.
