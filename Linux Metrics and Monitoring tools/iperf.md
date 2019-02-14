@@ -256,6 +256,8 @@ Tăng tiếp lên 3g
 
 `iperf -c 192.168.226.1 -u -b 3g -t 20 -i 1`
 
+<img src="img/25.jpg">
+
 Ta thấy băng thông có vẻ đã đến giới hạn, đây chính là tốc độ tối đa của card mạng ens33 của mình
 
 ## Tham khảo
