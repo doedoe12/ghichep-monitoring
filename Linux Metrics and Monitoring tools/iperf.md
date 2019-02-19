@@ -161,8 +161,6 @@ Cài đặt iPerf bằng câu lệnh:
 Đối với CentOS:
 
 ```
-yum install epel-release
-yum update
 yum install iperf
 ```
 
